@@ -12,8 +12,6 @@ public class DatabaseConfig {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseConfig.class.getName());
     private static final Properties properties = new Properties();
-    private static String successfulPassword = null;
-    private static boolean passwordResolved = false;
 
     static {
         try {
@@ -26,7 +24,7 @@ public class DatabaseConfig {
             }
         }
 
-        try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
+        try ( InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (input != null) {
                 properties.load(input);
             }
@@ -51,6 +49,10 @@ public class DatabaseConfig {
         return properties.getProperty("db.user", "root");
     }
 
+    public static String getPassword() {
+        return properties.getProperty("db.password", "root");
+    }
+
     public static String getParams() {
         return properties.getProperty("db.params", "?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
     }
@@ -60,7 +62,7 @@ public class DatabaseConfig {
      */
     public static Connection getServerConnection() throws SQLException {
         String baseUrl = "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getParams();
-        return getConnectionWithFallback(baseUrl);
+        return getConnectionInternal(baseUrl);
     }
 
     /**
@@ -74,50 +76,24 @@ public class DatabaseConfig {
 
     public static Connection getDatabaseConnectionInternal() throws SQLException {
         String dbUrl = "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDbName() + getParams();
-        return getConnectionWithFallback(dbUrl);
+        return getConnectionInternal(dbUrl);
     }
 
     /**
-     * Tenta conectar utilizando a senha configurada em db.properties e fallback para senhas comuns se necessario.
+     * Tenta conectar utilizando a senha configurada em db.properties e fallback
+     * para senhas comuns se necessario.
      */
-    private static synchronized Connection getConnectionWithFallback(String url) throws SQLException {
+    private static synchronized Connection getConnectionInternal(String url) throws SQLException {
         String user = getUser();
-        String configuredPass = properties.getProperty("db.password", "");
+        String password = getPassword();
 
-        if (passwordResolved && successfulPassword != null) {
-            try {
-                return DriverManager.getConnection(url, user, successfulPassword);
-            } catch (SQLException e) {
-                passwordResolved = false; // reset e tenta novamente
-            }
+        try {
+            Connection conn =DriverManager.getConnection(url, user, password);
+            LOGGER.info("Conexao com MySQL estabelecida com sucesso!");
+            return conn;
+        } catch (SQLException e) {
+            LOGGER.info("Conexao com MySQL estabelecida com sucesso!");
+            throw new SQLException("Nao foi possivel conectar ao MySQL.");
         }
-
-        String[] candidatePasswords = new String[] {
-            configuredPass,
-            "",
-            "root",
-            "123456",
-            "admin",
-            "mysql",
-            "1234",
-            "password"
-        };
-
-        SQLException lastException = null;
-
-        for (String pass : candidatePasswords) {
-            try {
-                Connection conn = DriverManager.getConnection(url, user, pass);
-                successfulPassword = pass;
-                passwordResolved = true;
-                LOGGER.info("Conexao com MySQL estabelecida com sucesso!");
-                return conn;
-            } catch (SQLException e) {
-                lastException = e;
-            }
-        }
-
-        LOGGER.severe("Falha ao conectar ao MySQL com as senhas testadas.");
-        throw lastException != null ? lastException : new SQLException("Nao foi possivel conectar ao MySQL.");
     }
 }
