@@ -21,4 +21,17 @@ O **Sistema de Controle de Estoque & Pedidos (SCEP)** tem como objetivo permitir
 
 O sistema deve possuir uma interface web simples, padronizada e responsiva, utilizando **JSP**, **CSS** e **JavaScript**.
 
+## Comandos Maven
+ - Utilizar o terminal do Windows Powershel em modo administrador.
 
+### Construir a aplicação
+ - ```mvn clean package```
+
+### Deploy/Rodar a aplicação
+ - ```mvn tomcat7:run```
+
+### Undeploy/Remover a aplicação
+ - ```mvn tomcat7:undeploy```
+
+### Abra o navegador em:
+ - http://localhost:8080/controle-estoque/
