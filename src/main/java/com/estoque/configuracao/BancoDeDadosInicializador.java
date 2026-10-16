@@ -17,7 +17,6 @@ public class BancoDeDadosInicializador {
         /**
          * Inicializa as tabelas do banco de dados se necessário.
          * 
-         * @return Retorna o resultado da operação (static synchronized void)
          */
         public static synchronized void inicializarSeNecessario() {
                 if (isInitialized) {

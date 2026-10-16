@@ -21,7 +21,22 @@ O **Sistema de Controle de Estoque & Pedidos (SCEP)** tem como objetivo permitir
 
 O sistema deve possuir uma interface web simples, padronizada e responsiva, utilizando **JSP**, **CSS** e **JavaScript**.
 
-## Comandos Maven
+## Comandos Docker para Execução
+ - Utilizar o terminal do Windows Powershel em modo administrador.
+
+### Para criar os conteiner e os serviços
+ - ```docker compose up --build```
+
+### Parar os serviços
+ - ```docker compose down -v```
+
+### Abra o navegador em:
+ - http://localhost:8080/
+
+### Remover as imagens
+ - ```docker compose down --rmi all```
+
+## Comandos Maven  para Execução
  - Utilizar o terminal do Windows Powershel em modo administrador.
 
 ### Construir a aplicação

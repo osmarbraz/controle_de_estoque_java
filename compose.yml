@@ -1,0 +1,299 @@
+# Define os serviços (containers) que farão parte da aplicação.
+services:
+
+  # ============================================================
+  # SERVIÇO DO BANCO DE DADOS MYSQL
+  # ============================================================
+
+  # Nome do serviço MySQL.
+  # Esse nome também será utilizado como hostname pelos outros
+  # containers da mesma rede Docker.
+  mysql:
+
+    # Imagem Docker utilizada para criar o container.
+    # Neste caso, utiliza o MySQL na versão 8.0.
+    image: mysql:8.0
+
+    # Define o nome do container.
+    # O container poderá ser identificado pelo nome "mysql".
+    container_name: mysql
+
+    # Define o comportamento do container caso ele seja encerrado.
+    # "unless-stopped" reinicia automaticamente o container,
+    # exceto quando ele tiver sido parado manualmente.
+    restart: unless-stopped
+    
+    # Variáveis de ambiente utilizadas durante a configuração
+    # inicial do MySQL.
+    environment:
+
+      # Define a senha do usuário administrador "root".
+      MYSQL_ROOT_PASSWORD: root
+
+      # Cria o banco de dados inicial da aplicação se ainda não existir.
+      MYSQL_DATABASE: EstoqueDB
+
+    # Mapeamento das portas entre o computador e o container.
+    ports:
+
+      # Porta 3306 do computador -> porta 3306 do container.
+      #
+      # A porta 3306 é a porta padrão utilizada pelo protocolo
+      # MySQL.
+      - "3306:3306"
+      
+    # Define uma verificação de saúde (healthcheck) para o MySQL.
+    #
+    # O healthcheck permite verificar se o servidor MySQL
+    # está realmente funcionando e pronto para receber conexões.
+    healthcheck:
+
+      # Comando utilizado para verificar se o servidor MySQL
+      # está respondendo corretamente.
+      #
+      # "mysqladmin ping" envia uma solicitação ao servidor MySQL
+      # para verificar se ele está disponível.
+      #
+      # CMD indica que o comando será executado diretamente
+      # pelo Docker dentro do container.
+      #
+      # "-h localhost" indica que a verificação será realizada
+      # no servidor MySQL localizado no próprio container.
+      #
+      # "-u root" define o usuário utilizado na verificação.
+      #
+      # "-proot" define a senha do usuário root.
+      # A opção "-p" indica a senha e "root" é o valor da senha.      
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+
+      # Define o intervalo entre as verificações.
+      #
+      # Neste caso, o Docker executará o healthcheck
+      # a cada 10 segundos.
+      interval: 10s
+
+      # Define o tempo máximo que o Docker aguardará
+      # pela resposta do comando de verificação.
+      #
+      # Se o MySQL não responder dentro de 5 segundos,
+      # a verificação será considerada como falha.
+      timeout: 5s
+
+      # Define a quantidade de tentativas consecutivas
+      # que podem falhar antes de o container ser considerado
+      # como "unhealthy" (não saudável).
+      #
+      # Neste caso, são permitidas até 5 falhas consecutivas.
+      retries: 5
+
+      # Define um período inicial de tolerância para a inicialização
+      # do MySQL.
+      #
+      # Durante os primeiros 30 segundos, as falhas do healthcheck
+      # não serão consideradas para determinar o estado "unhealthy".
+      #
+      # Esse período é importante porque o MySQL pode levar alguns
+      # segundos para inicializar completamente.
+      start_period: 30s
+      
+    # Define os volumes utilizados pelo container.
+    volumes:
+
+      # Associa o volume Docker "mysql_data" ao diretório
+      # /var/lib/mysql dentro do container.
+      #
+      # O diretório /var/lib/mysql é onde o MySQL armazena
+      # seus arquivos de dados.
+      #
+      # Dessa forma, os dados não são perdidos quando o
+      # container é removido ou recriado.
+      - mysql_data:/var/lib/mysql
+
+    # Define as redes às quais o container estará conectado.
+    networks:
+
+      # Conecta o MySQL à rede "rede_cliente".
+      #
+      # Outros containers conectados à mesma rede poderão
+      # acessar o MySQL utilizando o hostname "mysql".
+      - rede_cliente
+
+  # ============================================================
+  # SERVIÇO DO PHPMYADMIN
+  # ============================================================
+
+  # Define o serviço que será responsável por executar
+  # o phpMyAdmin, uma interface Web utilizada para administrar
+  # bancos de dados MySQL.
+  #phpmyadmin:
+
+    # Define uma dependência entre os serviços.
+    #
+    # O phpMyAdmin depende do serviço "mysql" e, portanto,
+    # o container do MySQL será iniciado antes do phpMyAdmin.
+    #
+    # IMPORTANTE:
+    # O "depends_on" controla a ordem de inicialização,
+    # mas não garante que o MySQL já esteja pronto para
+    # receber conexões.
+    #depends_on:
+    #  - mysql
+
+    # Define a imagem Docker utilizada para criar o container.
+    #
+    # A imagem phpmyadmin/phpmyadmin contém o phpMyAdmin
+    # e os componentes necessários para executá-lo.
+    #image: phpmyadmin/phpmyadmin:5.2.3
+
+    # Define o comportamento do container quando ele for
+    # encerrado.
+    #
+    # "always" faz com que o Docker tente reiniciar
+    # automaticamente o container.
+    #restart: always
+
+    # Conecta o phpMyAdmin à rede Docker utilizada pela aplicação
+    # e pelo banco de dados.
+    #
+    # Dessa forma, o phpMyAdmin consegue acessar o MySQL
+    # utilizando o nome do serviço "mysql".
+    #networks:
+    #  - rede_cliente
+
+    # Mapeia uma porta do computador para a porta do phpMyAdmin
+    # dentro do container.
+    #
+    # Porta 88 do computador -> porta 80 do container.
+    #
+    # A porta 88 é a porta HTTP utilizada pelo phpMyAdmin.
+    #
+    # Depois de iniciar os containers, o phpMyAdmin poderá
+    # ser acessado através de:
+    # http://localhost:88
+    #ports:
+    #  - "88:80"
+
+    # Define as variáveis de ambiente utilizadas para configurar
+    # o phpMyAdmin.
+    #environment:
+
+      # Define o servidor MySQL ao qual o phpMyAdmin deverá
+      # se conectar.
+      #
+      # "mysql" corresponde ao nome do serviço MySQL definido
+      # no compose.yml.
+      #
+      # Como os dois containers estão na mesma rede Docker,
+      # o phpMyAdmin consegue localizar o MySQL pelo nome
+      # "mysql".
+      #PMA_HOST: mysql
+
+      # Define a senha do usuário root do MySQL.
+      #
+      # Essa senha deve ser igual à senha definida no serviço
+      # MySQL através da variável MYSQL_ROOT_PASSWORD.
+      #MYSQL_ROOT_PASSWORD: root
+
+  # ============================================================
+  # SERVIÇO DA APLICAÇÃO JAVA
+  # ============================================================
+
+  # Nome do serviço que executará a aplicação Java.
+  app:
+
+    # Imagem Docker utilizada para executar a aplicação.
+    image: controle_de_estoque
+        
+    # Define as configurações necessárias para construir a imagem
+    # Docker da aplicação.
+    build:
+
+      # Define a pasta que será utilizada como contexto durante
+      # a construção da imagem.
+      #
+      # O ponto "." representa a pasta atual, onde está localizado
+      # o arquivo compose.yml.
+      #
+      # Arquivos existentes dentro dessa pasta poderão ser
+      # utilizados pelo Dockerfile durante o processo de construção.
+      context: .
+
+      # Define o nome do arquivo Dockerfile que será utilizado
+      # para construir a imagem da aplicação.
+      #
+      # Neste caso, será utilizado o arquivo "Dockerfile",
+      # localizado na pasta definida pelo "context".
+      dockerfile: Dockerfile
+
+    # Nome do container que executará a aplicação.
+    container_name: controle_de_estoque
+
+    # Reinicia automaticamente o container caso ele seja
+    # encerrado inesperadamente.
+    restart: unless-stopped
+   
+    # Mapeamento das portas entre o computador e o container.
+    ports:
+
+      # Porta 8080 do computador -> porta 8080 do Tomcat.
+      #
+      # Assim, a aplicação poderá ser acessada através de:
+      # http://localhost:8080
+      - "8080:8080"
+
+    # Define as variáveis de ambiente para a aplicação conectar ao container MySQL
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: EstoqueDB
+      DB_USER: root
+      DB_PASSWORD: root
+
+    # Define dependências entre os serviços.
+    depends_on:
+
+      # Determina que o container MySQL deve ser iniciado
+      # antes do container da aplicação.
+      #
+      # A condição "service_healthy" determina que a aplicação
+      # deverá aguardar o MySQL apresentar o estado "healthy"
+      # antes de ser iniciada.  
+      mysql:
+          condition: service_healthy
+
+    # Conecta a aplicação à mesma rede utilizada pelo MySQL.
+    #
+    # Isso permite que a aplicação encontre o banco de dados
+    # utilizando o hostname "mysql".
+    networks:
+      - rede_cliente
+
+# ==============================================================
+# VOLUMES
+# ==============================================================
+
+# Declara os volumes utilizados pelos serviços.
+volumes:
+
+  # Cria o volume persistente utilizado pelo MySQL.
+  #
+  # Os dados armazenados nesse volume permanecem disponíveis
+  # mesmo que o container MySQL seja removido.
+  mysql_data:
+
+# ==============================================================
+# REDES
+# ==============================================================
+
+# Declara as redes utilizadas pelos serviços.
+networks:
+
+  # Nome da rede Docker que será utilizada pela aplicação,
+  # pelo phpMyAdmin e pelo banco de dados.
+  rede_cliente:
+
+    # Define o tipo de driver utilizado pela rede.
+    #
+    # O driver "bridge" cria uma rede virtual que permite
+    # a comunicação entre os containers conectados a ela.
+    driver: bridge

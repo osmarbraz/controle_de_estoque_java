@@ -27,13 +27,18 @@ public class BancoDeDadosConfiguracao {
             }
         }
 
-        try (InputStream input = BancoDeDadosConfiguracao.class.getClassLoader()
-                .getResourceAsStream("db.propriedades")) {
-            if (input != null) {
+        InputStream input = BancoDeDadosConfiguracao.class.getClassLoader().getResourceAsStream("db.properties");
+        if (input != null) {
+            try {
                 propriedades.load(input);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Nao foi possivel carregar propriedades de banco, usando padroes", e);
+            } finally {
+                try {
+                    input.close();
+                } catch (Exception ignored) {
+                }
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Nao foi possivel carregar db.propriedades, usando padroes", e);
         }
     }
 
@@ -43,6 +48,14 @@ public class BancoDeDadosConfiguracao {
      * @return Retorna o resultado da operação (static String)
      */
     public static String obterHost() {
+        String env = System.getenv("DB_HOST");
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        String prop = System.getProperty("db.host");
+        if (prop != null && !prop.trim().isEmpty()) {
+            return prop.trim();
+        }
         return propriedades.getProperty("db.host", "localhost");
     }
 
@@ -52,6 +65,14 @@ public class BancoDeDadosConfiguracao {
      * @return Retorna o resultado da operação (static String)
      */
     public static String obterPorta() {
+        String env = System.getenv("DB_PORT");
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        String prop = System.getProperty("db.port");
+        if (prop != null && !prop.trim().isEmpty()) {
+            return prop.trim();
+        }
         return propriedades.getProperty("db.port", "3306");
     }
 
@@ -61,6 +82,14 @@ public class BancoDeDadosConfiguracao {
      * @return Retorna o resultado da operação (static String)
      */
     public static String obterNomeBanco() {
+        String env = System.getenv("DB_NAME");
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        String prop = System.getProperty("db.name");
+        if (prop != null && !prop.trim().isEmpty()) {
+            return prop.trim();
+        }
         return propriedades.getProperty("db.name", "EstoqueDB");
     }
 
@@ -70,6 +99,14 @@ public class BancoDeDadosConfiguracao {
      * @return Retorna o resultado da operação (static String)
      */
     public static String obterUsuario() {
+        String env = System.getenv("DB_USER");
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        String prop = System.getProperty("db.user");
+        if (prop != null && !prop.trim().isEmpty()) {
+            return prop.trim();
+        }
         return propriedades.getProperty("db.user", "root");
     }
 
@@ -79,6 +116,14 @@ public class BancoDeDadosConfiguracao {
      * @return Retorna o resultado da operação (static String)
      */
     public static String obterSenha() {
+        String env = System.getenv("DB_PASSWORD");
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        String prop = System.getProperty("db.password");
+        if (prop != null && !prop.trim().isEmpty()) {
+            return prop.trim();
+        }
         return propriedades.getProperty("db.password", "root");
     }
 
@@ -88,6 +133,14 @@ public class BancoDeDadosConfiguracao {
      * @return Retorna o resultado da operação (static String)
      */
     public static String obterParametros() {
+        String env = System.getenv("DB_PARAMS");
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        String prop = System.getProperty("db.params");
+        if (prop != null && !prop.trim().isEmpty()) {
+            return prop.trim();
+        }
         return propriedades.getProperty("db.params",
                 "?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
     }
