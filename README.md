@@ -49,4 +49,4 @@ O sistema deve possuir uma interface web simples, padronizada e responsiva, util
  - ```mvn tomcat7:undeploy```
 
 ### Abra o navegador em:
- - http://localhost:8080/controle-estoque/
+ - http://localhost:8080/controle-de-estoque/
