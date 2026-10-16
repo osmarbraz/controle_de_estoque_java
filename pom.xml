@@ -1,23 +1,71 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<!--
+    ============================================================
+    CONFIGURAÇÃO PRINCIPAL DO PROJETO MAVEN
+    ============================================================
+
+    O arquivo pom.xml (Project Object Model) descreve as
+    configurações do projeto Java, suas dependências, a versão
+    da linguagem, os plugins e o processo de compilação e empacotamento.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Versão do modelo de configuração utilizado pelo Maven. -->
     <modelVersion>4.0.0</modelVersion>
 
+    <!--
+        ========================================================
+        IDENTIFICAÇÃO DO PROJETO
+        ========================================================
+
+        groupId: identifica o grupo ou organização do projeto.
+        artifactId: nome do artefato produzido pelo Maven.
+        version: versão atual do projeto.
+        packaging: tipo de pacote gerado; WAR é utilizado
+        para aplicações web Java.
+    -->
     <groupId>com.estoque</groupId>
-    <artifactId>controle-estoque</artifactId>
+    <artifactId>controle-de-estoque</artifactId>
     <version>0.0.1</version>
     <packaging>war</packaging>
 
+    <!-- Nome descritivo do projeto. -->
     <name>controle_de_estoque</name>
 
+    <!--
+        ========================================================
+        PROPRIEDADES DO PROJETO
+        ========================================================
+
+        Define configurações reutilizáveis durante a compilação.
+        source e target especificam Java 8 como versão de origem
+        e destino do bytecode.
+        project.build.sourceEncoding define UTF-8 para os arquivos.
+    -->
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!--
+        ========================================================
+        DEPENDÊNCIAS DO PROJETO
+        ========================================================
+
+        Declara as bibliotecas utilizadas pela aplicação.
+        O Maven baixa e disponibiliza essas bibliotecas conforme
+        o escopo definido para cada dependência.
+    -->
     <dependencies>
-        <!-- Servlet API -->
+
+        <!--
+            API de Servlets: permite criar componentes que recebem
+            e processam requisições HTTP.
+            provided: o servidor de aplicações fornece essa API.
+        -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -25,7 +73,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSP API -->
+        <!--
+            API JSP: fornece as interfaces necessárias para páginas
+            JavaServer Pages.
+            provided: a implementação é fornecida pelo servidor web.
+        -->
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
@@ -33,28 +85,41 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSTL -->
+        <!--
+            JSTL: oferece tags e recursos para simplificar a lógica
+            de apresentação nas páginas JSP.
+        -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
 
-        <!-- MySQL Connector -->
+        <!--
+            Driver JDBC do MySQL: permite estabelecer conexões
+            com o banco de dados MySQL a partir do Java.
+        -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
 
-        <!-- GSON for JSON APIs -->
+        <!--
+            Gson: biblioteca para converter objetos Java em JSON
+            e JSON em objetos Java, útil em APIs e integrações.
+        -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
         </dependency>
 
-        <!-- JUnit 5 -->
+        <!--
+            JUnit 5: framework utilizado para escrever e executar
+            testes automatizados.
+            test: dependência utilizada somente na fase de testes.
+        -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -62,30 +127,72 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito for Java 8 (4.11.0 supports Java 8 and static mocking) -->
+        <!--
+            Mockito: permite criar objetos simulados (mocks) para
+            testar componentes sem depender de implementações reais.
+            Esta versão é compatível com Java 8.
+        -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!--
+            Integração entre Mockito e JUnit Jupiter.
+            Facilita a utilização de mocks nos testes JUnit 5.
+        -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!--
+            Mockito Inline: habilita recursos adicionais de mock,
+            incluindo simulação de métodos estáticos nessa versão.
+            Utilizado apenas nos testes.
+        -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
             <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
+    <!--
+        ========================================================
+        CONFIGURAÇÃO DE BUILD
+        ========================================================
+
+        Define como o Maven compila, testa e empacota a aplicação.
+        Os plugins abaixo complementam as tarefas padrão do Maven.
+    -->
     <build>
-        <finalName>controle-estoque</finalName>
+
+        <!-- Nome do arquivo WAR produzido, sem incluir a versão. -->
+        <finalName>controle-de-estoque</finalName>
+
+        <!--
+            ====================================================
+            PLUGINS DO MAVEN
+            ====================================================
+
+            Plugins executam tarefas específicas no ciclo de vida
+            do projeto, como compilar, testar e gerar relatórios.
+        -->
         <plugins>
+
+            <!--
+                Maven Compiler Plugin:
+                compila os arquivos-fonte Java.
+                source e target configuram Java 8 como referência
+                de linguagem e versão do bytecode.
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -96,21 +203,46 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+
+            <!--
+                Maven Surefire Plugin:
+                executa os testes automatizados durante a fase test.
+                Trabalha com os testes definidos no projeto e com
+                os frameworks de teste disponíveis.
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
+
+            <!--
+                JaCoCo:
+                coleta dados de cobertura durante a execução dos testes
+                e gera um relatório sobre o código exercitado.
+            -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
+
                 <executions>
+
+                    <!--
+                        Prepara o agente JaCoCo para registrar
+                        a cobertura durante a execução dos testes.
+                    -->
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
+
+                    <!--
+                        Gera o relatório de cobertura na fase test.
+                        O relatório HTML normalmente fica em:
+                        target/site/jacoco/index.html
+                    -->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -118,8 +250,17 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
+
+            <!--
+                Maven WAR Plugin:
+                empacota a aplicação web em um arquivo .war.
+                failOnMissingWebXml=false permite gerar o WAR sem
+                exigir web.xml, por exemplo, quando são usadas
+                anotações como @WebServlet.
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -128,7 +269,15 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            <!-- Tomcat 7 Maven Plugin for embedded running with mvn tomcat7:run -->
+
+            <!--
+                Tomcat 7 Maven Plugin:
+                disponibiliza o comando tomcat7:run para executar
+                a aplicação em um Tomcat gerenciado pelo plugin.
+                path: contexto de publicação da aplicação.
+                port: porta HTTP utilizada.
+                uriEncoding: codificação dos endereços e parâmetros.
+            -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
@@ -139,6 +288,8 @@
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
 </project>
