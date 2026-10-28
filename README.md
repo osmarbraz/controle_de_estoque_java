@@ -151,7 +151,7 @@ O sistema deve possuir uma interface web simples, padronizada e responsiva, util
 * **Conteinerização:** Docker & Docker Compose
 * **Testes Automatizados:** JUnit 5 e Mockito
 * **Cobertura de Código:** JaCoCo
-* **CI/CD e Qualidade de Código:** GitHub Actions & SonarCloud
+* **CI/CD e Qualidade de Código:** GitHub Actions (Pipelines automatizados de CI/CD), SonarCloud e Jib (Build e push da imagem Docker)
 * **Interface:** HTML5, CSS3 (Vanilla CSS) e JavaScript (ES6)
 
 ---
@@ -160,6 +160,9 @@ O sistema deve possuir uma interface web simples, padronizada e responsiva, util
 
 ```text
 controle_de_estoque/
+├── .github/
+│   └── workflows/
+│       └── maven.yml           # Pipeline de CI/CD automatizado no GitHub Actions
 ├── src/
 │   ├── main/
 │   │   ├── java/com/estoque/
@@ -243,6 +246,55 @@ Após a execução dos testes, o JaCoCo gera o relatório em HTML. Abra no naveg
 ```text
 target/site/jacoco/index.html
 ```
+
+---
+
+## Integração e Entrega Contínua (CI/CD com GitHub Actions)
+
+O projeto conta com uma esteira automatizada de **Integração Contínua (CI)** e **Entrega Contínua (CD)** configurada através do arquivo de workflow [maven.yml](.github/workflows/maven.yml), acionada a cada evento de **push** ou **pull request** direcionado à branch `main`.
+
+A esteira foi projetada em três ambientes (*jobs*) sequenciais e dependentes, garantindo validação rápida, análise detalhada de qualidade e entrega automatizada de artefatos:
+
+```mermaid
+flowchart LR
+    A["Push / Pull Request (main)"] --> B["1. build-dev<br/>(Compilação e Testes)"]
+    B --> C["2. build-hmg<br/>(SonarCloud e JaCoCo)"]
+    C --> D["3. build-prd<br/>(Docker Hub e Artefato WAR)"]
+```
+
+### Detalhamento dos Ambientes e Jobs:
+
+1. **`build-dev` — Ambiente de Desenvolvimento e Testes Unitários:**
+   * **Runner:** Ubuntu 24.04 (`ubuntu-24.04`).
+   * **Ambiente GitHub:** `dev`.
+   * **Configuração:** Java JDK 18 (distribuição Eclipse Temurin) com cache inteligente do Maven via `actions/setup-java@v5`.
+   * **Comando:** `mvn -B test --file pom.xml`.
+   * **Finalidade:** Compilar o projeto e executar toda a suíte de testes unitários automatizados (JUnit 5 + Mockito). Fornece feedback imediato em caso de erros de compilação ou quebra de regras de negócio.
+
+2. **`build-hmg` — Ambiente de Homologação e Análise de Qualidade:**
+   * **Runner:** Ubuntu 24.04 (`ubuntu-24.04`).
+   * **Ambiente GitHub:** `hmg` (acionado somente após aprovação do job `build-dev`).
+   * **Configuração:** Checkout com profundidade total de histórico (`fetch-depth: 0`) para inspeção estática precisa, além de cache dos pacotes do SonarCloud (`~/.sonar/cache`) e dependências do Maven (`~/.m2`) via `actions/cache@v5`.
+   * **Comando:** `mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=osmarbraz_controle_de_estoque_java org.jacoco:jacoco-maven-plugin:prepare-agent -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml`.
+   * **Finalidade:** Realizar a análise estática de código com o **SonarCloud** e consolidar o relatório de cobertura de testes gerado pelo **JaCoCo**, validando se as métricas atendem ao *Quality Gate* definido.
+
+3. **`build-prd` — Ambiente de Produção, Container e Empacotamento:**
+   * **Runner:** Ubuntu 24.04 (`ubuntu-24.04`).
+   * **Ambiente GitHub:** `prd` (acionado após o sucesso do job `build-hmg`).
+   * **Ações:**
+     * **Empacotamento e Publicação de Imagem Docker:** Utiliza o plugin Maven Google Jib (`mvn -B package --file pom.xml jib:build -DskipTests`) para compilar a aplicação, gerar a imagem Docker otimizada e publicá-la automaticamente no [Docker Hub](https://hub.docker.com/r/osmarbraz/controle_de_estoque_java).
+     * **Publicação de Artefato Compilado (.WAR):** Cria uma pasta temporária de *staging*, copia o pacote gerado (`target/*.war`) e publica o arquivo compactado (`Package-Linux.zip`) como artefato da execução do workflow através da action `actions/upload-artifact@v7`.
+
+### Segredos (Secrets) Necessários no GitHub
+
+Para a execução completa de todas as etapas da esteira, os seguintes segredos (*Repository Secrets*) devem estar devidamente configurados no repositório GitHub (**Settings > Secrets and variables > Actions**):
+
+| Secret | Descrição | Utilizado no Job |
+|--------|-----------|------------------|
+| `GITHUB_TOKEN` | Token padrão gerado pelo GitHub para leitura de metadados e permissões de status. | `build-hmg` |
+| `SONAR_TOKEN` | Token de autenticação da conta/organização no [SonarCloud](https://sonarcloud.io/). | `build-hmg` |
+| `DOCKERHUB_USERNAME` | Nome de usuário da conta no [Docker Hub](https://hub.docker.com/). | `build-prd` |
+| `DOCKERHUB_TOKEN` | Personal Access Token (PAT) gerado no Docker Hub com permissão de escrita (*push* de imagens). | `build-prd` |
 
 ---
 
