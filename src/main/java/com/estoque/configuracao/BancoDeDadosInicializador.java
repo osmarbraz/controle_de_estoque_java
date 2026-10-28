@@ -162,15 +162,35 @@ public class BancoDeDadosInicializador {
                                                                 + "('Caixa de Água Mineral 500ml', 'CX', 15.00, 28.00, 60, 4, NOW()), "
                                                                 + "('Cadeira Ergonômica de Escritório', 'UN', 320.00, 549.00, 10, 5, NOW());");
 
-                                // Pedido Inicial
+                                // Pedido 1: aberto - 2 itens (Teclado + Mouse)
                                 declaracao.executeUpdate("INSERT INTO Pedido (clienteId, data, total, situacao) VALUES "
                                                 + "(1, NOW(), 289.80, 'aberto');");
 
-                                // Itens do Pedido Inicial
+                                // Itens do Pedido 1
                                 declaracao.executeUpdate(
                                                 "INSERT INTO ItemPedido (pedidoId, produtoId, quantidade, precoVenda) VALUES "
                                                                 + "(1, 1, 1, 199.90), "
                                                                 + "(1, 2, 1, 89.90);");
+
+                                // Pedido 2: fechado - 3 itens (Monitor + Café + Cadeira)
+                                // Total: 1199.00 (1 Monitor) + 29.90*2 (2 Cafés) + 549.00 (1 Cadeira) = 1807.80
+                                declaracao.executeUpdate("INSERT INTO Pedido (clienteId, data, total, situacao) VALUES "
+                                                + "(2, DATE_SUB(NOW(), INTERVAL 7 DAY), 1807.80, 'fechado');");
+
+                                // Itens do Pedido 2
+                                declaracao.executeUpdate(
+                                                "INSERT INTO ItemPedido (pedidoId, produtoId, quantidade, precoVenda) VALUES "
+                                                                + "(2, 3, 1, 1199.00), "
+                                                                + "(2, 4, 2, 29.90), "
+                                                                + "(2, 6, 1, 549.00);");
+
+                                // Ajustar estoques dos itens do Pedido 2 (fechado reduz estoque)
+                                // Produto 3 (Monitor): 15 - 1 = 14
+                                // Produto 4 (Café): 120 - 2 = 118
+                                // Produto 6 (Cadeira): 10 - 1 = 9
+                                declaracao.executeUpdate("UPDATE Produto SET quantidade = quantidade - 1 WHERE produtoId = 3;");
+                                declaracao.executeUpdate("UPDATE Produto SET quantidade = quantidade - 2 WHERE produtoId = 4;");
+                                declaracao.executeUpdate("UPDATE Produto SET quantidade = quantidade - 1 WHERE produtoId = 6;");
 
                                 LOGGER.info("Dados de demonstracao inseridos com sucesso.");
                         }

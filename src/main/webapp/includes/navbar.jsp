@@ -41,8 +41,9 @@
                 <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=cidades" class="dropdown-link">🏙️ Lista de Cidades</a>
                 <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=categorias" class="dropdown-link">🏷️ Lista de Categorias</a>
                 <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=clientes" class="dropdown-link">👤 Lista de Clientes</a>
-                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=produtos" class="dropdown-link">📦 Lista de Produtos</a>
-                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos" class="dropdown-link">📜 Pedidos e Itens Pedido</a>
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos" class="dropdown-link">📜 Todos os Pedidos e Itens</a>
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos_abertos" class="dropdown-link">📂 Pedidos em Aberto</a>
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos_fechados" class="dropdown-link">🔒 Pedidos Fechados</a>
             </div>
         </li>
     </ul>

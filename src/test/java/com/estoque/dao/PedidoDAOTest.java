@@ -238,4 +238,49 @@ public class PedidoDAOTest {
         assertEquals(1, lista.get(0).getItens().size());
         assertEquals(item, lista.get(0).getItens().get(0));
     }
+
+    @Test
+    void testBuscarPorSituacao() throws SQLException {
+        Timestamp agora = new Timestamp(System.currentTimeMillis());
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("pedidoId")).thenReturn(2);
+        when(mockResultSet.getInt("clienteId")).thenReturn(4);
+        when(mockResultSet.getString("clienteNome")).thenReturn("Ana");
+        when(mockResultSet.getTimestamp("data")).thenReturn(agora);
+        when(mockResultSet.getDouble("total")).thenReturn(150.0);
+        when(mockResultSet.getString("situacao")).thenReturn("aberto");
+
+        List<Pedido> lista = pedidoDAO.buscarPorSituacao("aberto");
+
+        assertEquals(1, lista.size());
+        assertEquals(2, lista.get(0).getPedidoId());
+        assertEquals("Ana", lista.get(0).getClienteNome());
+        verify(mockStatement).setString(1, "aberto");
+    }
+
+    @Test
+    void testBuscarPorSituacaoComItens() throws SQLException {
+        Timestamp agora = new Timestamp(System.currentTimeMillis());
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("pedidoId")).thenReturn(8);
+        when(mockResultSet.getInt("clienteId")).thenReturn(6);
+        when(mockResultSet.getString("clienteNome")).thenReturn("Fernanda");
+        when(mockResultSet.getTimestamp("data")).thenReturn(agora);
+        when(mockResultSet.getDouble("total")).thenReturn(320.0);
+        when(mockResultSet.getString("situacao")).thenReturn("fechado");
+
+        ItemPedido item = new ItemPedido(8, 2, 2.0, 160.0);
+        when(mockItemPedidoDAO.buscarPorPedidoId(8)).thenReturn(Collections.singletonList(item));
+
+        List<Pedido> lista = pedidoDAO.buscarPorSituacaoComItens("fechado");
+
+        assertEquals(1, lista.size());
+        assertEquals(1, lista.get(0).getItens().size());
+        assertEquals(item, lista.get(0).getItens().get(0));
+        verify(mockStatement).setString(1, "fechado");
+    }
 }

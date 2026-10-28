@@ -27,12 +27,12 @@
         para aplicações web Java.
     -->
     <groupId>com.estoque</groupId>
-    <artifactId>controle-de-estoque</artifactId>
+    <artifactId>controle_de_estoque_java</artifactId>
     <version>0.0.1</version>
     <packaging>war</packaging>
 
     <!-- Nome descritivo do projeto. -->
-    <name>controle_de_estoque</name>
+    <name>controle_de_estoque_java</name>
 
     <!--
         ========================================================
@@ -175,7 +175,7 @@
     <build>
 
         <!-- Nome do arquivo WAR produzido, sem incluir a versão. -->
-        <finalName>controle-de-estoque</finalName>
+        <finalName>controle_de_estoque_java</finalName>
 
         <!--
             ====================================================

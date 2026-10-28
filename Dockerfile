@@ -9,14 +9,14 @@ RUN rm -rf /usr/local/tomcat/webapps/*
 # do computador para o diretório de aplicações Web do Tomcat dentro do container.
 #
 # Arquivo de origem gerado pelo Maven (<finalName>controle-estoque</finalName>):
-# ./target/controle-de-estoque.war
+# ./target/controle_de_estoque_java.war
 #
 # Arquivo de destino dentro do container:
 # /usr/local/tomcat/webapps/ROOT.war
 #
 # O nome ROOT.war faz com que o Tomcat disponibilize a aplicação
 # diretamente na raiz do servidor Web (http://localhost:8080).
-COPY ./target/controle-de-estoque.war /usr/local/tomcat/webapps/ROOT.war
+COPY ./target/controle_de_estoque_java.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
 

@@ -90,8 +90,14 @@ public class BancoDeDadosInicializadorTest {
         verify(mockStmtBanco).executeUpdate(contains("INSERT INTO Categoria"));
         verify(mockStmtBanco).executeUpdate(contains("INSERT INTO Cliente"));
         verify(mockStmtBanco).executeUpdate(contains("INSERT INTO Produto"));
-        verify(mockStmtBanco).executeUpdate(contains("INSERT INTO Pedido"));
-        verify(mockStmtBanco).executeUpdate(contains("INSERT INTO ItemPedido"));
+        // Deve inserir 2 pedidos (aberto e fechado)
+        verify(mockStmtBanco, times(2)).executeUpdate(contains("INSERT INTO Pedido"));
+        // Deve inserir itens de ambos os pedidos
+        verify(mockStmtBanco, times(2)).executeUpdate(contains("INSERT INTO ItemPedido"));
+        // Deve ajustar o estoque dos 3 produtos do pedido fechado
+        verify(mockStmtBanco, times(3)).executeUpdate(contains("UPDATE Produto SET quantidade"));
+        // O pedido 2 deve estar fechado
+        verify(mockStmtBanco).executeUpdate(contains("fechado"));
     }
 
     @Test

@@ -189,4 +189,51 @@ public class PedidoDAO {
         }
         return pedidos;
     }
+
+    /**
+     * Executa a operação de buscarPorSituacao.
+     * 
+     * @param situacao Situação do pedido (ex: 'aberto', 'fechado')
+     * @return Retorna a lista de pedidos filtrada pela situação (List<Pedido>)
+     */
+    public List<Pedido> buscarPorSituacao(String situacao) throws SQLException {
+        List<Pedido> lista = new ArrayList<>();
+        String sql = "SELECT p.pedidoId, p.clienteId, p.data, p.total, p.situacao, "
+                + "cli.Nome AS clienteNome "
+                + "FROM Pedido p "
+                + "INNER JOIN Cliente cli ON p.clienteId = cli.clienteId "
+                + "WHERE p.situacao = ? "
+                + "ORDER BY p.pedidoId DESC";
+        try (Connection conexao = BancoDeDadosConfiguracao.obterConexao();
+                PreparedStatement declaracao = conexao.prepareStatement(sql)) {
+            declaracao.setString(1, situacao);
+            try (ResultSet resultado = declaracao.executeQuery()) {
+                while (resultado.next()) {
+                    Pedido ped = new Pedido();
+                    ped.setPedidoId(resultado.getInt("pedidoId"));
+                    ped.setClienteId(resultado.getInt("clienteId"));
+                    ped.setClienteNome(resultado.getString("clienteNome"));
+                    ped.setData(resultado.getTimestamp("data"));
+                    ped.setTotal(resultado.getDouble("total"));
+                    ped.setSituacao(resultado.getString("situacao"));
+                    lista.add(ped);
+                }
+            }
+        }
+        return lista;
+    }
+
+    /**
+     * Executa a operação de buscarPorSituacaoComItens.
+     * 
+     * @param situacao Situação do pedido (ex: 'aberto', 'fechado')
+     * @return Retorna a lista de pedidos com itens carregados (List<Pedido>)
+     */
+    public List<Pedido> buscarPorSituacaoComItens(String situacao) throws SQLException {
+        List<Pedido> pedidos = buscarPorSituacao(situacao);
+        for (Pedido p : pedidos) {
+            p.setItens(itemPedidoDAO.buscarPorPedidoId(p.getPedidoId()));
+        }
+        return pedidos;
+    }
 }

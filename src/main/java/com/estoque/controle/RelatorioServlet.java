@@ -14,7 +14,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-@WebServlet("/servlet/relatorios")
+@WebServlet({"/servlet/relatorios", "/relatorios"})
 /**
  * Classe responsável por gerenciar a lógica de RelatorioServlet.
  */
@@ -68,6 +68,16 @@ public class RelatorioServlet extends HttpServlet {
                 case "pedidos":
                     request.setAttribute("pedidos", pedidoDAO.buscarTodosComItens());
                     request.getRequestDispatcher("/relatorios/pedidos.jsp").forward(request, response);
+                    break;
+                case "pedidos_abertos":
+                case "pedidos-abertos":
+                    request.setAttribute("pedidos", pedidoDAO.buscarPorSituacaoComItens("aberto"));
+                    request.getRequestDispatcher("/relatorios/pedidos_abertos.jsp").forward(request, response);
+                    break;
+                case "pedidos_fechados":
+                case "pedidos-fechados":
+                    request.setAttribute("pedidos", pedidoDAO.buscarPorSituacaoComItens("fechado"));
+                    request.getRequestDispatcher("/relatorios/pedidos_fechados.jsp").forward(request, response);
                     break;
                 default:
                     response.sendRedirect(request.getContextPath() + "/servlet/relatorios");
@@ -137,26 +147,43 @@ public class RelatorioServlet extends HttpServlet {
 
             case "pedidos":
                 out.println("<h2>Relatório - Lista de Pedidos e Itens</h2>");
-                for (Pedido ped : pedidoDAO.buscarTodosComItens()) {
-                    String dt = ped.getData() != null ? sdf.format(ped.getData()) : "-";
-                    out.println("<br><table><thead>");
-                    out.println("<tr class='sub-header'><th colspan='5'>Pedido #" + ped.getPedidoId() + " | Cliente: " + escapeHtml(ped.getClienteNome()) + " | Data: " + dt + " | Situação: " + ped.getSituacao().toUpperCase() + " | Total: " + nf.format(ped.getTotal()) + "</th></tr>");
-                    out.println("<tr><th>Produto</th><th>Unidade</th><th>Qtd</th><th>Preço Un.</th><th>Subtotal</th></tr>");
-                    out.println("</thead><tbody>");
-                    if (ped.getItens() == null || ped.getItens().isEmpty()) {
-                        out.println("<tr><td colspan='5'><i>Nenhum item cadastrado neste pedido.</i></td></tr>");
-                    } else {
-                        for (ItemPedido item : ped.getItens()) {
-                            out.println("<tr><td>" + escapeHtml(item.getProdutoDescricao()) + "</td><td>" + escapeHtml(item.getUnidade()) + "</td><td>" + item.getQuantidade() + "</td><td class='text-right'>" + nf.format(item.getPrecoVenda()) + "</td><td class='text-right'>" + nf.format(item.getSubtotal()) + "</td></tr>");
-                        }
-                    }
-                    out.println("</tbody></table>");
-                }
+                exportPedidosTabela(out, pedidoDAO.buscarTodosComItens(), sdf, nf);
+                break;
+
+            case "pedidos_abertos":
+            case "pedidos-abertos":
+                out.println("<h2>Relatório - Lista de Pedidos Abertos e Itens</h2>");
+                exportPedidosTabela(out, pedidoDAO.buscarPorSituacaoComItens("aberto"), sdf, nf);
+                break;
+
+            case "pedidos_fechados":
+            case "pedidos-fechados":
+                out.println("<h2>Relatório - Lista de Pedidos Fechados e Itens</h2>");
+                exportPedidosTabela(out, pedidoDAO.buscarPorSituacaoComItens("fechado"), sdf, nf);
                 break;
         }
 
         out.println("</body></html>");
         out.flush();
+    }
+
+    private void exportPedidosTabela(PrintWriter out, java.util.List<Pedido> pedidos, SimpleDateFormat sdf, NumberFormat nf) {
+        for (Pedido ped : pedidos) {
+            String dt = ped.getData() != null ? sdf.format(ped.getData()) : "-";
+            String situacao = ped.getSituacao() != null ? ped.getSituacao().toUpperCase() : "-";
+            out.println("<br><table><thead>");
+            out.println("<tr class='sub-header'><th colspan='5'>Pedido #" + ped.getPedidoId() + " | Cliente: " + escapeHtml(ped.getClienteNome()) + " | Data: " + dt + " | Situação: " + situacao + " | Total: " + nf.format(ped.getTotal()) + "</th></tr>");
+            out.println("<tr><th>Produto</th><th>Unidade</th><th>Qtd</th><th>Preço Un.</th><th>Subtotal</th></tr>");
+            out.println("</thead><tbody>");
+            if (ped.getItens() == null || ped.getItens().isEmpty()) {
+                out.println("<tr><td colspan='5'><i>Nenhum item cadastrado neste pedido.</i></td></tr>");
+            } else {
+                for (ItemPedido item : ped.getItens()) {
+                    out.println("<tr><td>" + escapeHtml(item.getProdutoDescricao()) + "</td><td>" + escapeHtml(item.getUnidade()) + "</td><td>" + item.getQuantidade() + "</td><td class='text-right'>" + nf.format(item.getPrecoVenda()) + "</td><td class='text-right'>" + nf.format(item.getSubtotal()) + "</td></tr>");
+                }
+            }
+            out.println("</tbody></table>");
+        }
     }
 
     private String escapeHtml(String text) {

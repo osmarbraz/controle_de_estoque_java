@@ -140,6 +140,30 @@ public class RelatorioServletTest {
     }
 
     @Test
+    void testDoGetHtmlPedidosAbertos() throws ServletException, IOException, SQLException {
+        when(request.getParameter("tipo")).thenReturn("pedidos_abertos");
+        when(mockPedidoDAO.buscarPorSituacaoComItens("aberto")).thenReturn(Collections.emptyList());
+
+        servlet.doGet(request, response);
+
+        verify(request).setAttribute(eq("pedidos"), any());
+        verify(request).getRequestDispatcher("/relatorios/pedidos_abertos.jsp");
+        verify(dispatcher).forward(request, response);
+    }
+
+    @Test
+    void testDoGetHtmlPedidosFechados() throws ServletException, IOException, SQLException {
+        when(request.getParameter("tipo")).thenReturn("pedidos_fechados");
+        when(mockPedidoDAO.buscarPorSituacaoComItens("fechado")).thenReturn(Collections.emptyList());
+
+        servlet.doGet(request, response);
+
+        verify(request).setAttribute(eq("pedidos"), any());
+        verify(request).getRequestDispatcher("/relatorios/pedidos_fechados.jsp");
+        verify(dispatcher).forward(request, response);
+    }
+
+    @Test
     void testDoGetHtmlDefaultRedirect() throws ServletException, IOException {
         when(request.getParameter("tipo")).thenReturn("desconhecido");
 
@@ -261,5 +285,51 @@ public class RelatorioServletTest {
         assertTrue(out.contains("Pedido #1"));
         assertTrue(out.contains("Mouse"));
         assertTrue(out.contains("Nenhum item cadastrado"));
+    }
+
+    @Test
+    void testExportXlsPedidosAbertos() throws ServletException, IOException, SQLException {
+        when(request.getParameter("tipo")).thenReturn("pedidos_abertos");
+        when(request.getParameter("exportar")).thenReturn("xls");
+
+        Pedido p1 = new Pedido(10, 10, new Date(), 100.0, "aberto");
+        p1.setClienteNome("Cliente Aberto");
+        ItemPedido item = new ItemPedido(10, 5, 1.0, 100.0);
+        item.setProdutoDescricao("Teclado");
+        item.setUnidade("UN");
+        p1.setItens(Collections.singletonList(item));
+
+        when(mockPedidoDAO.buscarPorSituacaoComItens("aberto")).thenReturn(Collections.singletonList(p1));
+
+        servlet.doGet(request, response);
+
+        printWriter.flush();
+        String out = stringWriter.toString();
+        assertTrue(out.contains("Relatório - Lista de Pedidos Abertos e Itens"));
+        assertTrue(out.contains("Pedido #10"));
+        assertTrue(out.contains("Teclado"));
+    }
+
+    @Test
+    void testExportXlsPedidosFechados() throws ServletException, IOException, SQLException {
+        when(request.getParameter("tipo")).thenReturn("pedidos_fechados");
+        when(request.getParameter("exportar")).thenReturn("xls");
+
+        Pedido p2 = new Pedido(20, 20, new Date(), 200.0, "fechado");
+        p2.setClienteNome("Cliente Fechado");
+        ItemPedido item = new ItemPedido(20, 8, 2.0, 100.0);
+        item.setProdutoDescricao("Monitor");
+        item.setUnidade("UN");
+        p2.setItens(Collections.singletonList(item));
+
+        when(mockPedidoDAO.buscarPorSituacaoComItens("fechado")).thenReturn(Collections.singletonList(p2));
+
+        servlet.doGet(request, response);
+
+        printWriter.flush();
+        String out = stringWriter.toString();
+        assertTrue(out.contains("Relatório - Lista de Pedidos Fechados e Itens"));
+        assertTrue(out.contains("Pedido #20"));
+        assertTrue(out.contains("Monitor"));
     }
 }

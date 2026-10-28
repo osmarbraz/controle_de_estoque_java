@@ -13,8 +13,8 @@
             <p class="page-subtitle">Listagem completa dos pedidos emitidos e o detalhamento de seus itens</p>
         </div>
         <div>
-            <a href="${pageContext.request.contextPath}/relatorios?tipo=pedidos&exportar=xls" class="btn btn-xls">📥 Baixar em XLS</a>
-            <a href="${pageContext.request.contextPath}/relatorios" class="btn btn-outline" style="margin-left: 0.5rem;">⬅️ Voltar</a>
+            <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos&exportar=xls" class="btn btn-xls">📥 Baixar em XLS</a>
+            <a href="${pageContext.request.contextPath}/servlet/relatorios" class="btn btn-outline" style="margin-left: 0.5rem;">⬅️ Voltar</a>
         </div>
     </div>
 

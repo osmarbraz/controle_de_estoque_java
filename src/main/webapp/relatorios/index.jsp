@@ -56,11 +56,31 @@
 
         <!-- 5. Pedidos e Itens -->
         <div class="card" style="grid-column: span 1 / -1;">
-            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">📜 Relatório de Pedidos e Seus Itens</h3>
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">📜 Relatório Geral de Pedidos e Itens</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Relatório analítico completo listando todos os pedidos de venda juntamente com o detalhamento dos itens de produto inseridos em cada pedido.</p>
             <div style="display: flex; gap: 0.5rem;">
                 <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos" class="btn btn-primary btn-sm">👁️ Visualizar Relatório Analítico Web</a>
                 <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos&exportar=xls" class="btn btn-xls btn-sm">📥 Baixar Planilha Completa XLS</a>
+            </div>
+        </div>
+
+        <!-- 6. Pedidos Abertos -->
+        <div class="card">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">📂 Relatório de Pedidos Abertos</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Relatório detalhado listando exclusivamente pedidos em aberto e seus respectivos itens.</p>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos_abertos" class="btn btn-outline btn-sm">👁️ Visualizar Web</a>
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos_abertos&exportar=xls" class="btn btn-xls btn-sm">📥 Baixar XLS</a>
+            </div>
+        </div>
+
+        <!-- 7. Pedidos Fechados -->
+        <div class="card">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">🔒 Relatório de Pedidos Fechados</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Relatório detalhado listando exclusivamente pedidos concluídos/fechados e seus itens.</p>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos_fechados" class="btn btn-outline btn-sm">👁️ Visualizar Web</a>
+                <a href="${pageContext.request.contextPath}/servlet/relatorios?tipo=pedidos_fechados&exportar=xls" class="btn btn-xls btn-sm">📥 Baixar XLS</a>
             </div>
         </div>
     </div>
