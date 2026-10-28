@@ -290,6 +290,42 @@
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>
+            
+            <!-- Plugin Jib do Maven: responsável por construir 
+                 e publicar imagens de contêiner diretamente em 
+                 um registro, como o Docker Hub, sem exigir um
+                 Dockerfile. 
+            -->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <!-- Imagem base -->
+                    <from>                        
+                        <image>tomcat:9.0-jdk8</image>
+                    </from>
+                    <!-- Configuração da imagem -->
+                    <to>                        
+                        <image>osmarbraz/${project.artifactId}:${project.version}</image>
+                        <auth>
+                            <username>
+                                ${env.DOCKERHUB_USERNAME}
+                            </username>
+                            <password>
+                                ${env.DOCKERHUB_TOKEN}
+                            </password>
+                        </auth>
+                    </to>
+                    <container>
+                        <appRoot>/usr/local/tomcat/webapps/ROOT</appRoot>                      
+                        <ports>
+                            <port>8080</port>
+                        </ports>  
+                        <format>OCI</format>                      
+                    </container>
+                </configuration>
+            </plugin>  
 
         </plugins>
     </build>
