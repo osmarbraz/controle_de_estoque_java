@@ -17,7 +17,7 @@ jobs:
     # Compila com diversas versões do JDK
     strategy:
       matrix: 
-        java: [16, 17, 18]
+        java: [8]
     name: build-dev - Teste com JDK ${{ matrix.java }}
     steps:
     # Utiliza a action checkout para fazer o git clone no runner
@@ -49,10 +49,10 @@ jobs:
       with:
         fetch-depth: 0 
     # Utiliza a action setup-java para configurar a versão necessária do JDK
-    - name: Configura o JDK 18
+    - name: Configura o JDK 8
       uses: actions/setup-java@v5      
       with:
-        java-version: '18'
+        java-version: '8'
         distribution: 'temurin'
         cache: maven     
     # Executa os passos da análise do código com o sonarcube     
@@ -88,10 +88,10 @@ jobs:
     steps:
     - name: Realiza o checkout do repositório
       uses: actions/checkout@v5
-    - name: Configura o JDK 18
+    - name: Configura o JDK 8
       uses: actions/setup-java@v5
       with:
-        java-version: '18'
+        java-version: '8'
         distribution: 'temurin'
         cache: maven
     # Executa o empacotamento do projeto com o Maven. 
