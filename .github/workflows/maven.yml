@@ -108,8 +108,8 @@ jobs:
     - name: Copia os artefatos a serem publicados na pasta temporária
       run: cp target/*.war staging
     - name: Usa Upload Artifact do GitHub Action
-      uses: actions/upload-artifact@v5
-      with:
+      uses: actions/upload-artifact@v7.0.2
+      with
         # Nome do arquivo a ser gerado
         name: Package-${{  runner.os }} #.zip será adicionado automaticamente
         # Caminho da pasta temporária (stating)
