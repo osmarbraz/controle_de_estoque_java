@@ -80,7 +80,7 @@ function initProductSearch() {
         produtoSelect.addEventListener('change', function () {
             const selectedOpt = this.options[this.selectedIndex];
             if (selectedOpt && selectedOpt.dataset.preco) {
-                if (precoInput) precoInput.value = parseFloat(selectedOpt.dataset.preco).toFixed(2);
+                if (precoInput) precoInput.value = Number.parseFloat(selectedOpt.dataset.preco).toFixed(2);
                 if (estoqueInfo) estoqueInfo.textContent = 'Estoque disponível: ' + (selectedOpt.dataset.estoque || '0');
             }
         });

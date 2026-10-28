@@ -31,19 +31,19 @@ function isValidCPF(cpf) {
     let soma = 0;
     let resto;
     for (let i = 1; i <= 9; i++) {
-        soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        soma = soma + Number.parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
     }
     resto = (soma * 10) % 11;
     if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+    if (resto !== Number.parseInt(cpf.substring(9, 10), 10)) return false;
 
     soma = 0;
     for (let i = 1; i <= 10; i++) {
-        soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        soma = soma + Number.parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
     }
     resto = (soma * 10) % 11;
     if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+    if (resto !== Number.parseInt(cpf.substring(10, 11), 10)) return false;
 
     return true;
 }
@@ -137,24 +137,24 @@ function validateProdutoForm(form) {
         setFieldError(unidade, false);
     }
 
-    const valCusto = parseFloat(precoCusto.value ? precoCusto.value.replace(',', '.') : '0');
-    if (isNaN(valCusto) || valCusto < 0) {
+    const valCusto = Number.parseFloat(precoCusto.value ? precoCusto.value.replace(',', '.') : '0');
+    if (Number.isNaN(valCusto) || valCusto < 0) {
         setFieldError(precoCusto, true, 'Preço de custo deve ser um número maior ou igual a zero.');
         isValid = false;
     } else {
         setFieldError(precoCusto, false);
     }
 
-    const valVenda = parseFloat(precoVenda.value ? precoVenda.value.replace(',', '.') : '0');
-    if (isNaN(valVenda) || valVenda <= 0) {
+    const valVenda = Number.parseFloat(precoVenda.value ? precoVenda.value.replace(',', '.') : '0');
+    if (Number.isNaN(valVenda) || valVenda <= 0) {
         setFieldError(precoVenda, true, 'Preço de venda deve ser maior que zero.');
         isValid = false;
     } else {
         setFieldError(precoVenda, false);
     }
 
-    const valQtd = parseFloat(quantidade.value ? quantidade.value.replace(',', '.') : '0');
-    if (isNaN(valQtd) || valQtd < 0) {
+    const valQtd = Number.parseFloat(quantidade.value ? quantidade.value.replace(',', '.') : '0');
+    if (Number.isNaN(valQtd) || valQtd < 0) {
         setFieldError(quantidade, true, 'Quantidade em estoque não pode ser negativa.');
         isValid = false;
     } else {
@@ -198,16 +198,16 @@ function validateItemPedidoForm(form) {
         setFieldError(produtoId, false);
     }
 
-    const valQtd = parseFloat(quantidade.value ? quantidade.value.replace(',', '.') : '0');
-    if (isNaN(valQtd) || valQtd <= 0) {
+    const valQtd = Number.parseFloat(quantidade.value ? quantidade.value.replace(',', '.') : '0');
+    if (Number.isNaN(valQtd) || valQtd <= 0) {
         setFieldError(quantidade, true, 'Quantidade deve ser maior que zero.');
         isValid = false;
     } else {
         setFieldError(quantidade, false);
     }
 
-    const valPreco = parseFloat(precoVenda.value ? precoVenda.value.replace(',', '.') : '0');
-    if (isNaN(valPreco) || valPreco <= 0) {
+    const valPreco = Number.parseFloat(precoVenda.value ? precoVenda.value.replace(',', '.') : '0');
+    if (Number.isNaN(valPreco) || valPreco <= 0) {
         setFieldError(precoVenda, true, 'Preço de venda deve ser maior que zero.');
         isValid = false;
     } else {

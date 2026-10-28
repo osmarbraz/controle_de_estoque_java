@@ -50,6 +50,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>osmarbraz</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.coverage.exclusions>**/*.js</sonar.coverage.exclusions> 
     </properties>
 
     <!--
@@ -227,6 +228,15 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
+                
+                <!--
+                    Exclui os javascripts dos testes.
+                -->
+                <configuration>                    
+                    <excludes>                        
+                        <exclude>**/*.js</exclude>                        
+                    </excludes>
+                </configuration>     
 
                 <executions>
 

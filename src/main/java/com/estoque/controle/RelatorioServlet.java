@@ -1,7 +1,17 @@
 package com.estoque.controle;
 
-import com.estoque.dao.*;
-import com.estoque.modelo.*;
+import com.estoque.dao.CategoriaDAO;
+import com.estoque.dao.CidadeDAO;
+import com.estoque.dao.ClienteDAO;
+import com.estoque.dao.PedidoDAO;
+import com.estoque.dao.ProdutoDAO;
+
+import com.estoque.modelo.Categoria;
+import com.estoque.modelo.Cidade;
+import com.estoque.modelo.Cliente;
+import com.estoque.modelo.ItemPedido;
+import com.estoque.modelo.Pedido;
+import com.estoque.modelo.Produto;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
