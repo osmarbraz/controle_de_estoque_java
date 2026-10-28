@@ -109,7 +109,7 @@ jobs:
       run: cp target/*.war staging
     - name: Usa Upload Artifact do GitHub Action
       uses: actions/upload-artifact@v7
-      with
+      with:
         # Nome do arquivo a ser gerado
         name: Package-${{  runner.os }} #.zip será adicionado automaticamente
         # Caminho da pasta temporária (stating)
