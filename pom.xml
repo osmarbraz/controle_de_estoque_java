@@ -317,6 +317,7 @@
                             </password>
                         </auth>
                     </to>
+                    <!-- Define as configurações de execução do contêiner. -->
                     <container>
                         <appRoot>/usr/local/tomcat/webapps/ROOT</appRoot>                      
                         <ports>
